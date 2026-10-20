@@ -3,152 +3,255 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>מתמטיקה - כיתה ז'</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Font: Rubik -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600;700&display=swap" rel="stylesheet">
-
+    <title>משימות מתמטיקה</title>
     <style>
-        body { font-family: 'Rubik', sans-serif; }
+        :root {
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --text: #1e293b;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+        }
+
+        .edit-btn {
+            background: transparent;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+            padding: 8px;
+        }
+
+        .edit-btn:hover {
+            opacity: 1;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+
+        .link-card {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--primary);
+            color: white;
+            text-decoration: none;
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.2s, transform 0.1s;
+            text-align: center;
+        }
+
+        .link-card:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+
+        .modal h2 {
+            margin-top: 0;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-save { background-color: var(--primary); color: white; }
+        .btn-cancel { background-color: #e2e8f0; color: #333; }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col justify-between p-4 sm:p-6 selection:bg-indigo-500 selection:text-white">
+<body>
 
-    <!-- Header / Title -->
-    <header class="max-w-md mx-auto w-full text-center mt-4 mb-6 relative">
-        <div class="inline-flex items-center justify-center w-14 h-14 bg-indigo-600 text-white rounded-2xl shadow-lg shadow-indigo-200 mb-3 text-2xl">
-            <i class="fa-solid fa-calculator"></i>
-        </div>
-        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">מתמטיקה - כיתה ז'</h1>
-        <p class="text-slate-500 text-sm mt-1">לחצו על המשימה שלכם לתרגול:</p>
+    <div class="header">
+        <button class="edit-btn" onclick="openTeacherModal()" title="עריכת קישורים">✏️</button>
+    </div>
 
-        <!-- Subtle Edit Toggle for Teacher -->
-        <button onclick="toggleEditMode()" title="מצב מורה" class="absolute left-0 top-0 text-slate-400 hover:text-indigo-600 p-2 text-sm transition-colors">
-            <i class="fa-solid fa-pen-to-square" id="editIcon"></i>
-        </button>
-    </header>
+    <div class="container">
+        <h1>משימות מתמטיקה</h1>
+        <div id="linksContainer" style="display: flex; flex-direction: column; gap: 16px;"></div>
+    </div>
 
-    <!-- Main Container: Max 3 Links -->
-    <main class="max-w-md mx-auto w-full space-y-4 my-auto">
-        <div id="cardsContainer" class="space-y-4">
-            <!-- Cards generated dynamically -->
-        </div>
-
-        <!-- Teacher Edit Panel (Hidden by default) -->
-        <div id="editModal" class="hidden bg-white border border-slate-200 rounded-2xl p-5 shadow-xl space-y-4 mt-6">
-            <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
-                    <i class="fa-solid fa-gear text-indigo-600"></i> עריכת 3 הקישורים
-                </h3>
-                <button onclick="toggleEditMode()" class="text-xs text-slate-400 hover:text-slate-600">סגור ✖</button>
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <h2>עריכת קישורים</h2>
+            
+            <div class="form-group">
+                <label>כותרת 1:</label>
+                <input type="text" id="title0">
+                <label style="margin-top:4px;">קישור 1:</label>
+                <input type="text" id="url0" placeholder="https://...">
+            </div>
+            <hr style="border: none; border-top: 1px solid #eee; margin: 15px 0;">
+            <div class="form-group">
+                <label>כותרת 2:</label>
+                <input type="text" id="title1">
+                <label style="margin-top:4px;">קישור 2:</label>
+                <input type="text" id="url1" placeholder="https://...">
+            </div>
+            <hr style="border: none; border-top: 1px solid #eee; margin: 15px 0;">
+            <div class="form-group">
+                <label>כותרת 3:</label>
+                <input type="text" id="title2">
+                <label style="margin-top:4px;">קישור 3:</label>
+                <input type="text" id="url2" placeholder="https://...">
             </div>
 
-            <!-- Inputs for 3 links -->
-            <div id="editForm" class="space-y-3">
-                <!-- Inputs injected dynamically -->
+            <div class="modal-buttons">
+                <button class="btn btn-cancel" onclick="closeModal()">ביטול</button>
+                <button class="btn btn-save" onclick="saveLinks()">שמור שינויים</button>
             </div>
-
-            <button onclick="saveChanges()" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-sm transition-all shadow-md">
-                שמור שינויים
-            </button>
         </div>
-    </main>
+    </div>
 
-    <!-- Footer -->
-    <footer class="max-w-md mx-auto w-full text-center text-slate-400 text-xs py-4">
-        <p>© גישה מהירה למשימות מתמטיקה</p>
-    </footer>
-
-    <!-- JavaScript Logic -->
     <script>
-        // Store default 3 links
+        // Set your teacher password here (Default is 6667)
+        const TEACHER_PIN = "6667";
+
         const defaultLinks = [
-            { id: 0, title: "משימה 1", url: "https://moodlemoe.lms.education.gov.il/mod/quiz/view.php?id=491884" },
-            { id: 1, title: "", url: "" },
-            { id: 2, title: "", url: "" }
+            { title: "משימה 1", url: "https://example.com" },
+            { title: "משימה 2", url: "" },
+            { title: "משימה 3", url: "" }
         ];
 
-        let links = [];
+        function getLinks() {
+            const saved = localStorage.getItem('math_links');
+            return saved ? JSON.parse(saved) : defaultLinks;
+        }
 
-        function init() {
-            const saved = localStorage.getItem('min_math_links_3');
-            if (saved) {
-                try {
-                    links = JSON.parse(saved);
-                } catch(e) {
-                    links = defaultLinks;
+        function renderLinks() {
+            const links = getLinks();
+            const container = document.getElementById('linksContainer');
+            container.innerHTML = '';
+
+            links.forEach(link => {
+                if (link.url && link.url.trim() !== '') {
+                    const a = document.createElement('a');
+                    a.className = 'link-card';
+                    a.href = link.url;
+                    a.target = '_blank';
+                    a.textContent = link.title || 'משימה';
+                    container.appendChild(a);
                 }
-            } else {
-                links = defaultLinks;
-            }
-            render();
+            });
         }
 
-        function saveToStorage() {
-            localStorage.setItem('min_math_links_3', JSON.stringify(links));
-        }
-
-        function render() {
-            const container = document.getElementById('cardsContainer');
-            container.innerHTML = links.map((link, index) => `
-                <a href="${link.url}" target="_blank" rel="noopener noreferrer" 
-                   class="block bg-white hover:bg-indigo-600 group border border-slate-200 hover:border-indigo-600 rounded-2xl p-5 shadow-sm hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-3 space-x-reverse">
-                            <span class="w-8 h-8 rounded-xl bg-indigo-50 group-hover:bg-indigo-500 text-indigo-600 group-hover:text-white flex items-center justify-center font-bold text-sm transition-colors">
-                                ${index + 1}
-                            </span>
-                            <span class="font-bold text-slate-800 group-hover:text-white text-base sm:text-lg transition-colors">
-                                ${link.title || 'משימה ללא שם'}
-                            </span>
-                        </div>
-                        <i class="fa-solid fa-arrow-left text-slate-400 group-hover:text-white transition-colors"></i>
-                    </div>
-                </a>
-            `).join('');
-        }
-
-        function toggleEditMode() {
-            const modal = document.getElementById('editModal');
-            const isHidden = modal.classList.contains('hidden');
-            
-            if (isHidden) {
-                renderEditForm();
-                modal.classList.remove('hidden');
-            } else {
-                modal.classList.add('hidden');
+        function openTeacherModal() {
+            const pin = prompt("הכנס סיסמת מורה:");
+            if (pin === TEACHER_PIN) {
+                const links = getLinks();
+                for (let i = 0; i < 3; i++) {
+                    document.getElementById(`title${i}`).value = links[i] ? links[i].title : '';
+                    document.getElementById(`url${i}`).value = links[i] ? links[i].url : '';
+                }
+                document.getElementById('editModal').style.display = 'flex';
+            } else if (pin !== null) {
+                alert("סיסמה שגויה!");
             }
         }
 
-        function renderEditForm() {
-            const form = document.getElementById('editForm');
-            form.innerHTML = links.map((link, i) => `
-                <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
-                    <span class="text-xs font-bold text-indigo-600">קישור ${i + 1}</span>
-                    <input type="text" id="title_${i}" value="${link.title}" placeholder="שם המשימה" class="w-full px-2.5 py-1.5 bg-white border rounded-lg text-xs focus:ring-1 focus:ring-indigo-500 outline-none">
-                    <input type="url" id="url_${i}" value="${link.url}" placeholder="כתובת URL" class="w-full px-2.5 py-1.5 bg-white border rounded-lg text-xs dir-ltr text-left focus:ring-1 focus:ring-indigo-500 outline-none">
-                </div>
-            `).join('');
+        function closeModal() {
+            document.getElementById('editModal').style.display = 'none';
         }
 
-        function saveChanges() {
-            links = links.map((link, i) => ({
-                id: i,
-                title: document.getElementById(`title_${i}`).value,
-                url: document.getElementById(`url_${i}`).value
-            }));
-
-            saveToStorage();
-            render();
-            toggleEditMode();
+        function saveLinks() {
+            const newLinks = [];
+            for (let i = 0; i < 3; i++) {
+                newLinks.push({
+                    title: document.getElementById(`title${i}`).value,
+                    url: document.getElementById(`url${i}`).value
+                });
+            }
+            localStorage.setItem('math_links', JSON.stringify(newLinks));
+            closeModal();
+            renderLinks();
         }
 
-        window.onload = init;
+        // Initial Render
+        renderLinks();
     </script>
 </body>
 </html>
